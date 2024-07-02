@@ -3,6 +3,8 @@
 
 #include "Sailboat.h"
 
+#include <algorithm>
+
 namespace Sailboat {
     namespace detail {
         template <typename ...Ts> bool Point<Ts...>::operator < (int i) { return i > at; }
