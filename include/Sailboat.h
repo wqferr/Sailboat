@@ -67,6 +67,9 @@ namespace Sailboat {
 
             std::vector<detail::Point<Ts...>> m_points;
             typename m_traits::callback_type on_step_cb {NULL};
+            typename m_traits::callback_type on_finish_cb {NULL};
+
+            bool finish_callback_called {false};
             std::size_t m_length {0};
             std::size_t m_at {0};
         public:
@@ -83,6 +86,7 @@ namespace Sailboat {
 
             inline const typename m_traits::value_type step(int by = 1, bool suppress_cb = false);
             inline Tween<Ts...>& on_step(typename m_traits::callback_type&& func);
+            inline Tween<Ts...>& on_finish(typename m_traits::callback_type&& func);
 
             inline const typename m_traits::value_type seek(std::size_t at);
             inline std::size_t length();

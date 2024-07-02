@@ -106,7 +106,13 @@ namespace Sailboat {
     template <typename ...Ts> const typename traits::tw_traits<Ts...>::value_type Tween<Ts...>::step(int by, bool suppress_cb) {
         m_at += by;
         auto it = std::lower_bound(m_points.begin(), m_points.end(), m_at);
-        if (by >= 0 ? it == m_points.end() : m_at < 0) return m_values;
+        if (by >= 0 && it == m_points.end()) {
+            if (!finish_callback_called && !suppress_cb && on_finish_cb != NULL) {
+                finish_callback_called = true;
+                call(on_finish_cb, m_values, detail::gen_seq<sizeof...(Ts)>());
+            }
+            return m_values;
+        }
 
         detail::Point<Ts...> prev = *(it - 1), next = *(it);
         ease<0, Ts...>(prev.values, next.values, m_at - prev.at, next.delays, next.durations, next.easings, m_values);
@@ -118,6 +124,11 @@ namespace Sailboat {
 
     template <typename ...Ts> inline Tween<Ts...>& Tween<Ts...>::on_step(typename m_traits::callback_type&& func) {
         if (func != NULL) on_step_cb = func;
+        return *this;
+    }
+
+    template <typename ...Ts> inline Tween<Ts...>& Tween<Ts...>::on_finish(typename m_traits::callback_type&& func) {
+        if (func != NULL) on_finish_cb = func;
         return *this;
     }
 
